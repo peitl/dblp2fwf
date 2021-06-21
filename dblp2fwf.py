@@ -43,6 +43,13 @@ def read_bibs(args):
         print("Please specify a DBLP id or a local bibtex file.")
     return bibs
 
+def is_good(year, args):
+    if args.since != None and year < args.since:
+        return False
+    if args.until != None and year > args.until:
+        return False
+    return True
+
 def main(args):
     bibs = read_bibs(args)
     if bibs != None:
@@ -58,6 +65,9 @@ def main(args):
             collection = get_field("booktitle") if thisbib.type == "inproceedings" else get_field("journal")
             pages = get_field("pages")
             year = get_field("year")
+            if not is_good(year, args):
+                continue
+
             url = None
             if "doi" in thisbib.fields:
                 url = "https://doi.org/" + get_field("doi")
@@ -84,6 +94,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("dblp_id", metavar="DBLP-id", nargs="?", help="your DBLP id (usually of the form xxx/yyyy or similar)")
     parser.add_argument("-b", "--bibfile", help="parse a local .bib file instead of DBLP")
+    parser.add_argument("-u", "--until", help="only return entries up to this year")
+    parser.add_argument("-s", "--since", help="only return entries since this year")
 
     args = parser.parse_args()
     main(args)

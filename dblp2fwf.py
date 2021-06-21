@@ -7,6 +7,7 @@ import re
 
 def expand_macros(s : str):
     replacements = {
+                "--" : "-",
                "\\_" : "_",
             "\\'{a}" : "á",
             "\\'{e}" : "é",
@@ -23,8 +24,18 @@ def expand_macros(s : str):
         s = s.replace(k, r)
     return s
 
+def format_author(person : pybdb.Person):
+    #names = person.first_names + person.middle_names + person.prelast_names + person.last_names
+    names = person.rich_first_names + person.rich_middle_names + person.rich_prelast_names + person.rich_last_names
+    return " ".join(map(str, names)).replace("Tomás", "Tomáš")
+
 
 def format_authors(authors):
+    if len(authors) == 1:
+        return authors[0]
+    if len(authors) == 2:
+        return f"{authors[0]} and {authors[1]}"
+
     authors_f = ""
     for i in range(len(authors) - 1):
         authors_f += authors[i] + ", "
@@ -59,13 +70,16 @@ def has_author(authors, args):
 def main(args):
     bibs = read_bibs(args)
     if bibs != None:
+        i = 0
         for bib in bibs.entries:
             thisbib = bibs.entries[bib]
             def get_field(key):
                 return expand_macros(thisbib.fields.get(key, ""))
 
             title = get_field("title")
-            authors = list(expand_macros(str(author)) for author in thisbib.persons["author"])
+            #authors = list(expand_macros(str(author)) for author in thisbib.persons["author"])
+            #authors = list(expand_macros(format_author(author)) for author in thisbib.persons["author"])
+            authors = list(format_author(author) for author in thisbib.persons["author"])
 
             if not has_author(authors, args):
                 continue
@@ -87,7 +101,7 @@ def main(args):
 
             # guess open access status
             
-            oa = "Gold OA?"
+            oa = "Open Access?"
             publisher = get_field("publisher").lower()
             url_lower = url.lower()
             green_oa = ["springer", "elsevier", "acm"]
@@ -97,7 +111,10 @@ def main(args):
             elif any(venue in url for venue in gold_oa) or "dagstuhl" in publisher:
                 oa = "Gold OA"
 
-            print(f"\\tofill{{ {authors_f}: {title}. {collection}, {year}, {pages}, {url}, {oa} }}\\\\\n\\msep")
+            print(f"\\tofill{{ {authors_f}: {title}. {collection}, {pages}. {year}. {url}. {oa} }}\\\\")
+            i += 1
+            if i < len(bibs.entries):
+                print("\\msep")
 
 
 if __name__ == "__main__":

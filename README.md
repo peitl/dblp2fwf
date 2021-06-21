@@ -8,7 +8,9 @@ with your [DBLP id](https://blog.dblp.org/2020/08/18/new-dblp-url-scheme-and-api
 	
 	python3 dblp2fwf.py 181/3386
 
-Don't forget to double-check and clean the output, it will be necessary. See `python3 dblp2fwf.py -h` for a few more options, in particular filtering based on date of publication.
+because my [DBLP entry](https://dblp.org/pid/165/8476.html) is `https://dblp.org/pid/165/8476.html`.
+Don't forget to double-check and clean the output, it will be necessary.
+See `python3 dblp2fwf.py -h` for a few more options, in particular filtering based on date of publication.
 
 ## Dependencies
 

@@ -105,7 +105,7 @@ def main(args):
             publisher = get_field("publisher").lower()
             url_lower = url.lower()
             green_oa = ["springer", "elsevier", "acm"]
-            gold_oa = ["arxiv", "eccc", "dagstuhl"]
+            gold_oa = ["arxiv", "eccc", "jair"]
             if any(pubstring in publisher for pubstring in green_oa):
                 oa = "Green OA"
             elif any(venue in url for venue in gold_oa) or "dagstuhl" in publisher:

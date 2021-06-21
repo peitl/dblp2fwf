@@ -50,6 +50,12 @@ def is_good(year, args):
         return False
     return True
 
+def has_author(authors, args):
+    if args.author != None:
+        match_author = args.author.lower()
+        return any(match_author in author.lower() for author in authors)
+    return True
+
 def main(args):
     bibs = read_bibs(args)
     if bibs != None:
@@ -60,6 +66,10 @@ def main(args):
 
             title = get_field("title")
             authors = list(expand_macros(str(author)) for author in thisbib.persons["author"])
+
+            if not has_author(authors, args):
+                continue
+
             authors_f = format_authors(authors)
 
             collection = get_field("booktitle") if thisbib.type == "inproceedings" else get_field("journal")
@@ -96,6 +106,7 @@ if __name__ == "__main__":
     parser.add_argument("-b", "--bibfile", help="parse a local .bib file instead of DBLP")
     parser.add_argument("-u", "--until", help="only return entries up to this year")
     parser.add_argument("-s", "--since", help="only return entries since this year")
+    parser.add_argument("-a", "--author", help="only entries with this author")
 
     args = parser.parse_args()
     main(args)
